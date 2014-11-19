@@ -65,7 +65,8 @@ public class Login extends Activity {
         final EditText passwordText = (EditText) findViewById(R.id.loginPassword);
         //alertDialog = new AlertDialog.Builder(this).create();
 
-        //deleteFile("AuthFile.dat"); //delete the file to cause the prompt every startup
+        //delete the file to cause the prompt every startup
+        //deleteFile("AuthFile.dat");
 
         InputStream inputStream = null; //try to load authfile
         try {
@@ -161,17 +162,20 @@ public class Login extends Activity {
                     {
                         Toast.makeText(getApplicationContext(),"Authenticated!",Toast.LENGTH_SHORT).show();
                         //Decrypted text reads out correct
-                        GodKey = key.toString(); //store key
+                        GodKey = passwordText.getText().toString(); //store key plain text (MUST FIX)
                         //do intention and activity change with GodKey being passed
+                        Intent intent = new Intent(getApplicationContext(), Shepherd.class);
+                        intent.putExtra("GodKey",GodKey);
+                        finish();
+                        startActivity(intent);
 
                     }else
                     {
                         Toast.makeText(getApplicationContext(),"Failed to authenticate!",Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(),""+e.getMessage(),Toast.LENGTH_SHORT).show(); //a generic toast catch for all encryption error outs
-                    Log.d("Custom Error", "Fuck error?" + e.getMessage());// print to console too incase of crash
-
+                    Toast.makeText(getApplicationContext(),"Password failed",Toast.LENGTH_SHORT).show(); //a generic toast catch for all encryption error outs
+                    Log.d("Custom Error", "Fuck error?" + e.getMessage());// print to console too in case of crash
             }
             }
         });
@@ -196,4 +200,6 @@ public class Login extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }
