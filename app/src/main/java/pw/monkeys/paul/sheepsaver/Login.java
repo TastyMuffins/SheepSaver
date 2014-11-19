@@ -105,20 +105,9 @@ public class Login extends Activity {
                 public void onClick(View view) {
                     if (newPassword1.getText().toString().equals(newPassword2.getText().toString())) {
                         try {
-                            KeySpec keySpec = new PBEKeySpec(newPassword1.getText().toString().toCharArray(), salt, iterationCount);
-                            SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-                            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
-                            ecipher = Cipher.getInstance(key.getAlgorithm());
-                            ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-
                             Log.e("Debug", "Creating Auth File with password: " + newPassword1.getText().toString());
-                            String auth = "Authorized - Access Granted";
-                            byte[] d = auth.getBytes();
-                            byte[] enc = ecipher.doFinal(d);
-                            enc = Base64.encode(enc, Base64.DEFAULT);
                             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("AuthFile.dat", Context.MODE_PRIVATE));
-                            String data = new String(enc);
-                            outputStreamWriter.write(data);
+                            outputStreamWriter.write(Encryption.ECrypt(newPassword1.getText().toString(),"Authorized - Access Granted"));
                             outputStreamWriter.close();
                             Toast.makeText(getApplicationContext(), "Your Password Has Been Set!", Toast.LENGTH_LONG).show();
                             //Dismiss dialog and restart activity to reload AuthFile
@@ -151,14 +140,7 @@ public class Login extends Activity {
                 // create a secret (symmetric) key using PBE with MD5 and DES
                 try {
                     Log.e("Debug", "Checking against: " + authFile);
-                    SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-                    AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
-                    dcipher = Cipher.getInstance(key.getAlgorithm());
-                    dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-                    byte[] decode = authFile.getBytes();
-                    decode = Base64.decode(decode,Base64.DEFAULT);
-                    String decryptedAuthFile = new String(dcipher.doFinal(decode), "UTF8");
-                    if(decryptedAuthFile.equals("Authorized - Access Granted"))
+                    if(Encryption.DCrypt(passwordText.getText().toString(),authFile).equals("Authorized - Access Granted"))
                     {
                         Toast.makeText(getApplicationContext(),"Authenticated!",Toast.LENGTH_SHORT).show();
                         //Decrypted text reads out correct
