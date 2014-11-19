@@ -1,17 +1,23 @@
 package pw.monkeys.paul.sheepsaver;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Random;
 
-public class Shepherd extends Activity {
+
+public class Shepherd extends ListActivity {
 
     private String godKey = new String();
-
+    private ShepardDB shepardDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,9 +26,20 @@ public class Shepherd extends Activity {
         Intent intent = getIntent();
         godKey = intent.getStringExtra("GodKey");
 
+        shepardDB = new ShepardDB(this);
+        try {
+            shepardDB.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        List<PasswordItem> passwords = shepardDB.getAllStoredPasswords();
+        ListPasswordAdapter passwordAdapter = new ListPasswordAdapter(this,android.R.layout.simple_list_item_1,passwords);
+        setListAdapter(passwordAdapter);
+        //create a record in teh database for debug purposes
+        //shepardDB.createStoredPassword("Test.com","Paul","Password123",50);
+        passwordAdapter.notifyDataSetChanged();
         Toast.makeText(getApplicationContext(),"The key is :"+godKey,Toast.LENGTH_LONG).show();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -44,5 +61,20 @@ public class Shepherd extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    protected void onResume() {
+        try {
+            shepardDB.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        shepardDB.close();
+        super.onPause();
     }
 }

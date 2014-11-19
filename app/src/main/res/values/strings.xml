@@ -5,5 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_shepherd">"Shepherd "</string>
+    <string name="logoutString">Logout</string>
+    <string name="addPassword">Add Password</string>
 
 </resources>
