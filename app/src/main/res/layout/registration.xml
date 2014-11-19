@@ -6,7 +6,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Password:"
         android:id="@+id/textView" />
 
     <EditText
@@ -16,10 +15,11 @@
         android:ems="10"
         android:id="@+id/newPassword1"
         android:layout_below="@+id/newPassword2"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
         android:layout_alignRight="@+id/newPassword2"
-        android:layout_alignEnd="@+id/newPassword2" />
+        android:layout_alignEnd="@+id/newPassword2"
+        android:hint="and again.."
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView" />
 
     <EditText
         android:layout_width="match_parent"
@@ -29,17 +29,8 @@
         android:id="@+id/newPassword2"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="and Again:"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/newPassword2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_toEndOf="@+id/textView"
+        android:hint="Password..." />
 
     <Button
         android:layout_width="wrap_content"
