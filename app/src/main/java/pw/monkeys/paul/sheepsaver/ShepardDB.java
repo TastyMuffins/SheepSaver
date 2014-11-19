@@ -79,7 +79,10 @@ public class ShepardDB {
     private PasswordItem cursorToStoredPassword(Cursor cursor) {
         PasswordItem password = new PasswordItem();
         password.setId(cursor.getLong(0));
-        password.setStoredPassword(cursor.getString(1));
+        password.setDomain(cursor.getString(1));
+        password.setUsername(cursor.getString(2));
+        password.setStoredPassword(cursor.getString(3));
+        password.setPasswordStrength(cursor.getInt(4));
         return password;
     }
 }

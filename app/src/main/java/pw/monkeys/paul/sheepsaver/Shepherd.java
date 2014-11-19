@@ -3,10 +3,12 @@ package pw.monkeys.paul.sheepsaver;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ public class Shepherd extends ListActivity {
 
     private String godKey = new String();
     private ShepardDB shepardDB;
+    private ListView passwordListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +36,15 @@ public class Shepherd extends ListActivity {
             e.printStackTrace();
         }
         List<PasswordItem> passwords = shepardDB.getAllStoredPasswords();
+        Log.e("Full List",passwords.toString());
         ListPasswordAdapter passwordAdapter = new ListPasswordAdapter(this,android.R.layout.simple_list_item_1,passwords);
         setListAdapter(passwordAdapter);
         //create a record in teh database for debug purposes
-        //shepardDB.createStoredPassword("Test.com","Paul","Password123",50);
+
+        shepardDB.createStoredPassword("Test.com","Paul","Password123",50);
         passwordAdapter.notifyDataSetChanged();
-        Toast.makeText(getApplicationContext(),"The key is :"+godKey,Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(),"Created new record in DB",Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(),"The key is :"+godKey,Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -2,6 +2,7 @@ package pw.monkeys.paul.sheepsaver;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class ListPasswordAdapter extends ArrayAdapter<PasswordItem> {
         holder.usernameText.setText("Username: "+rowItem.getUsername());
         holder.passwordSecurityBar.setMax(100);
         holder.passwordSecurityBar.setProgress(rowItem.getPasswordStrength());
-
+        Log.e("Item",rowItem.getDomain()+" "+rowItem.getStoredPassword());
         //causing NPE
         //if(rowItem.getUsername().equals("null")) {
         //    holder.usernameText.setVisibility(View.INVISIBLE);
