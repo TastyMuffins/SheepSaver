@@ -70,21 +70,25 @@ public class Shepherd extends ListActivity {
         super.onListItemClick(l, v, position, id);
 
         PasswordItem shownItem = (PasswordItem) getListView().getItemAtPosition(position);
-        new AlertDialog.Builder(this)
-                .setTitle(shownItem.getDomain())
-                .setMessage(
-                "Username: "+shownItem.getUsername()+"\n"
-                +"Password: "+shownItem.getStoredPassword())
-                .setPositiveButton("Copy", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                       Toast.makeText(getApplicationContext(),"Did NOT copy password to clipboard",Toast.LENGTH_SHORT).show();
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+        try {
+            new AlertDialog.Builder(this)
+                    .setTitle(shownItem.getDomain())
+                    .setMessage(
+                    "Username: "+shownItem.getUsername()+"\n"
+                    +"Password: "+Encryption.DCrypt(godKey, shownItem.getStoredPassword()))
+                    .setPositiveButton("Copy", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                           Toast.makeText(getApplicationContext(),"Did NOT copy password to clipboard",Toast.LENGTH_SHORT).show();
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
 
-            }
-        }).show();
+                }
+            }).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),"Error "+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -128,10 +132,12 @@ public class Shepherd extends ListActivity {
                     String newPassword = passwordText.getText().toString();
                     int newStrength = 50; //make this be calculated based on password complexity
 
-                    passwordAdapter.add(shepardDB.createStoredPassword(newDomain,newUsername,newPassword,newStrength));
+                    try {
+                        passwordAdapter.add(shepardDB.createStoredPassword(newDomain,newUsername,Encryption.ECrypt(godKey,newPassword),newStrength));
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(),"Error "+e.getMessage(),Toast.LENGTH_LONG).show();
+                    }
                     passwordAdapter.notifyDataSetChanged();
-
-                    Toast.makeText(getApplicationContext(),"Created new record in DB",Toast.LENGTH_LONG).show();
                 }
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

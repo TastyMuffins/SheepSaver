@@ -1,6 +1,7 @@
 package pw.monkeys.paul.sheepsaver;
 
 import android.util.Base64;
+import android.util.Log;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
@@ -28,10 +29,10 @@ public class Encryption {
         AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
         cipher = Cipher.getInstance(key.getAlgorithm());
         cipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-        String auth = "Authorized - Access Granted";
-        byte[] d = auth.getBytes();
+        byte[] d = plainText.getBytes();
         byte[] enc = cipher.doFinal(d);
         enc = Base64.encode(enc, Base64.DEFAULT);
+        Log.e("Encrypt",plainText+" -> "+new String(enc));
         return new String(enc);
     }
     public static String DCrypt(String password,String cipherText) throws Exception{
@@ -42,6 +43,7 @@ public class Encryption {
         cipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
         byte[] decode = cipherText.getBytes();
         decode = Base64.decode(decode,Base64.DEFAULT);
+        Log.e("Decrypt",cipherText+" -> "+new String(cipher.doFinal(decode), "UTF8"));
         return new String(cipher.doFinal(decode), "UTF8");
     }
 }
