@@ -42,6 +42,6 @@ public class PasswordItem {
     // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
-        return storedPassword;
+        return domain;
     }
 }

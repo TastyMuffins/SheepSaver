@@ -13,6 +13,8 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:id="@+id/newPassword1"
         android:layout_below="@+id/newPassword2"
         android:layout_alignRight="@+id/newPassword2"
@@ -22,6 +24,8 @@
         android:layout_toEndOf="@+id/textView" />
 
     <EditText
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
@@ -33,6 +37,8 @@
         android:hint="Password..." />
 
     <Button
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Accept"
