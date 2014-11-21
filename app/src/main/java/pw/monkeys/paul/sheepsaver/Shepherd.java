@@ -78,7 +78,7 @@ public class Shepherd extends ListActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 PasswordItem shownItem = (PasswordItem) getListView().getItemAtPosition(position);
                 startActionMode(callBack);
-                return false;
+                return true;
 
             }
         });
@@ -216,6 +216,15 @@ public class Shepherd extends ListActivity {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch(item.getItemId()){
+                case R.id.deleteButton:
+                    shepardDB.deleteStoredPassword(1);
+                    mode.finish();
+                    return true;
+                case R.id.editButton:
+                    Toast.makeText(getApplicationContext(),"FIX THIS!",Toast.LENGTH_LONG).show();
+                    //Make an edit method!!!
+            }
             return false;
         }
 
