@@ -15,11 +15,13 @@ import javax.crypto.spec.PBEParameterSpec;
 /**
  * Created by Paul on 11/18/2014.
  */
+//maybe use this and convert to AES
+//http://javapapers.com/java/java-file-encryption-decryption-using-aes-password-based-encryption-pbe/
 public class Encryption {
     private static Cipher cipher;
     private static final int iterationCount = 10;
 
-    private static byte[] salt = {
+    private static byte[] salt = { //could be random per user bases stored in auth file as well
             (byte)0xB6,(byte)0x32,(byte)0xD5,(byte)0xF2,
             (byte)0x42, (byte)0x12, (byte)0xD7, (byte)0xE3
     };

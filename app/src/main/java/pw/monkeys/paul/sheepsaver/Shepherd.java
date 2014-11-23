@@ -36,6 +36,8 @@ public class Shepherd extends ListActivity {
     private ListView passwordListView;
     private ListPasswordAdapter passwordAdapter;
     private List<PasswordItem> passwords;
+    private PasswordItem selectedItem;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +78,10 @@ public class Shepherd extends ListActivity {
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                PasswordItem shownItem = (PasswordItem) getListView().getItemAtPosition(position);
+                selectedItem = (PasswordItem) getListView().getItemAtPosition(position);
+                callBack.setClickedView(view);
                 startActionMode(callBack);
+                view.setSelected(true);
                 return true;
 
             }
@@ -97,7 +101,7 @@ public class Shepherd extends ListActivity {
                                     + "Password: " + Encryption.DCrypt(godKey, shownItem.getStoredPassword()))
                     .setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(getApplicationContext(), "Did NOT copy password to clipboard", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Did NOT copy password to clipboard", Toast.LENGTH_SHORT).show();
                         }
                     }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -105,7 +109,7 @@ public class Shepherd extends ListActivity {
                 }
             }).show();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -166,16 +170,15 @@ public class Shepherd extends ListActivity {
                     int newStrength = 50; //make this be calculated based on password complexity
 
                     if (newDomain.isEmpty() || newPassword.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), "Domain or Password empty", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             passwordAdapter.add(shepardDB.createStoredPassword(newDomain, newUsername, Encryption.ECrypt(godKey, newPassword), newStrength));
                         } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         alertDialog.dismiss();
                     }
-
                     passwordAdapter.notifyDataSetChanged();
                 }
             });
@@ -201,7 +204,15 @@ public class Shepherd extends ListActivity {
 
     }
 
-    private ActionMode.Callback callBack = new ActionMode.Callback() {
+    private interface ActionCallback extends ActionMode.Callback {
+        public void setClickedView(View view);
+    }
+
+    private ActionCallback callBack = new ActionCallback() {
+        public View mClickedView;
+        public void setClickedView(View view) {
+            mClickedView = view;
+        }
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
@@ -218,12 +229,66 @@ public class Shepherd extends ListActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch(item.getItemId()){
                 case R.id.deleteButton:
-                    shepardDB.deleteStoredPassword(1);
+                    shepardDB.deleteStoredPassword(selectedItem.getId());
+                    passwordAdapter.remove(selectedItem);
                     mode.finish();
                     return true;
                 case R.id.editButton:
-                    Toast.makeText(getApplicationContext(),"FIX THIS!",Toast.LENGTH_LONG).show();
-                    //Make an edit method!!!
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View layout = inflater.inflate(R.layout.addpassword, null);
+                    final EditText domainText = (EditText) layout.findViewById(R.id.domainText);
+                    final EditText usernameText = (EditText) layout.findViewById(R.id.usernameText);
+                    final EditText passwordText = (EditText) layout.findViewById(R.id.passwordText);
+
+                    domainText.setText(selectedItem.getDomain());
+                    usernameText.setText(selectedItem.getUsername());
+                   // passwordText.setText(selectedItem.getStoredPassword());
+
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setView(layout);
+                    builder.setCancelable(false);
+                    builder.setTitle("Edit a stored password");
+                    builder.setMessage("Modify a stored entry managed by Shepard");
+                    builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    final AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //do some checking here is password empty? is password too short?
+                            //calculate 'strength'
+                            //#Jose
+                            String newDomain = domainText.getText().toString();
+                            String newUsername = usernameText.getText().toString();
+                            String newPassword = passwordText.getText().toString();
+                            int newStrength = 50; //make this be calculated based on password complexity
+
+                            if (newDomain.isEmpty() || newPassword.isEmpty()) {
+                                Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();
+                            } else {
+                                try {
+                                    shepardDB.deleteStoredPassword(selectedItem.getId());
+                                    passwordAdapter.add(shepardDB.createStoredPassword(newDomain, newUsername, Encryption.ECrypt(godKey, newPassword), newStrength));
+                                } catch (Exception e) {
+                                    Toast.makeText(context, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                                alertDialog.dismiss();
+                            }
+                            passwordAdapter.notifyDataSetChanged();
+                        }
+                    });
             }
             return false;
         }
