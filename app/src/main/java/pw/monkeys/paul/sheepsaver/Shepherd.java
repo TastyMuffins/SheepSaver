@@ -21,12 +21,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Shepherd extends ListActivity {
@@ -133,7 +136,7 @@ public class Shepherd extends ListActivity {
         }
         if (id == R.id.addPasswordMenu) {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.addpassword, null);
+            final View layout = inflater.inflate(R.layout.addpassword, null);
             final EditText domainText = (EditText) layout.findViewById(R.id.domainText);
             final EditText usernameText = (EditText) layout.findViewById(R.id.usernameText);
             final EditText passwordText = (EditText) layout.findViewById(R.id.passwordText);
@@ -156,6 +159,59 @@ public class Shepherd extends ListActivity {
                     dialogInterface.dismiss();
                 }
             });
+
+            final String newPassword = passwordText.getText().toString();
+            final ProgressBar passwordStrengthBar = (ProgressBar) layout.findViewById(R.id.strengthBar);
+            final PasswordItem myPasswordItem = new PasswordItem();
+
+            passwordText.addTextChangedListener(new TextWatcher() {
+                int passwordStrengthMeter = 0;
+                String password;
+                String STRONG_PASSWORD = "((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})";
+                String MODERATE_PASSWORD = "((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.*[!@#$%&*()<>=+/?]).{10,15})";
+                String WEAK_PASSWORD ="((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()<>=+/?]).{6,9})";
+
+
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    password = passwordText.getText().toString();
+
+                            //Strong password if it contains lower and upper cases, numbers, characters and is longer than 16
+                    if (password.matches("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})")) {
+                        passwordStrengthMeter=100;
+                        passwordStrengthBar.setProgress(passwordStrengthMeter);
+                    }//Moderate password if it contains lower and upper cases, numbers, characters and is longer than
+                    if (password.matches("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.*[!@#$%&*()<>=+/?]).{10,15})")) {
+                        passwordStrengthMeter = 70;
+                        passwordStrengthBar.setProgress(passwordStrengthMeter);
+
+                    }
+                    if(password.matches("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()<>=+/?]).{6,9})")){
+                        passwordStrengthMeter=10;
+                        passwordStrengthBar.setProgress(passwordStrengthMeter);
+                    }else{
+                        passwordStrengthMeter=0;
+                        passwordStrengthBar.setProgress(passwordStrengthMeter);
+
+                    }
+                    passwordStrengthBar.setProgress(passwordStrengthMeter);
+                }
+
+
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
             final AlertDialog alertDialog = builder.create();
             alertDialog.show();
             alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
@@ -166,7 +222,7 @@ public class Shepherd extends ListActivity {
                     //#Jose
                     String newDomain = domainText.getText().toString();
                     String newUsername = usernameText.getText().toString();
-                    String newPassword = passwordText.getText().toString();
+                    //String newPassword = passwordText.getText().toString();
                     int newStrength = 50; //make this be calculated based on password complexity
 
                     if (newDomain.isEmpty() || newPassword.isEmpty()) {
@@ -299,4 +355,7 @@ public class Shepherd extends ListActivity {
         }
 
     };
+
+
+
 }
