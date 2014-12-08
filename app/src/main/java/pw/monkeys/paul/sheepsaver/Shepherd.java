@@ -165,13 +165,6 @@ public class Shepherd extends ListActivity {
             final PasswordItem myPasswordItem = new PasswordItem();
 
             passwordText.addTextChangedListener(new TextWatcher() {
-                int passwordStrengthMeter = 0;
-                String password;
-                String STRONG_PASSWORD = "((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})";
-                String MODERATE_PASSWORD = "((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.*[!@#$%&*()<>=+/?]).{10,15})";
-                String WEAK_PASSWORD ="((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()<>=+/?]).{6,9})";
-
-
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -180,31 +173,9 @@ public class Shepherd extends ListActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    passwordStrengthBar.setProgress(PasswordItem.passwordStrengthMeter(passwordText.getText().toString()));
 
-                    password = passwordText.getText().toString();
-
-                            //Strong password if it contains lower and upper cases, numbers, characters and is longer than 16
-                    if (password.matches("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})")) {
-                        passwordStrengthMeter=100;
-                        passwordStrengthBar.setProgress(passwordStrengthMeter);
-                    }//Moderate password if it contains lower and upper cases, numbers, characters and is longer than
-                    if (password.matches("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.*[!@#$%&*()<>=+/?]).{10,15})")) {
-                        passwordStrengthMeter = 70;
-                        passwordStrengthBar.setProgress(passwordStrengthMeter);
-
-                    }
-                    if(password.matches("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()<>=+/?]).{6,9})")){
-                        passwordStrengthMeter=10;
-                        passwordStrengthBar.setProgress(passwordStrengthMeter);
-                    }else{
-                        passwordStrengthMeter=0;
-                        passwordStrengthBar.setProgress(passwordStrengthMeter);
-
-                    }
-                    passwordStrengthBar.setProgress(passwordStrengthMeter);
                 }
-
-
 
                 @Override
                 public void afterTextChanged(Editable s) {
@@ -217,23 +188,25 @@ public class Shepherd extends ListActivity {
             alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //do some checking here is password empty? is password too short?
-                    //calculate 'strength'
-                    //#Jose
+                    //For some reason it didn't like to store the domainText into a String nor Username for if statement
                     String newDomain = domainText.getText().toString();
                     String newUsername = usernameText.getText().toString();
-                    //String newPassword = passwordText.getText().toString();
-                    int newStrength = 50; //make this be calculated based on password complexity
+                    int newStrength = PasswordItem.passwordStrengthMeter(passwordText.getText().toString()); //make this be calculated based on password complexity
 
-                    if (newDomain.isEmpty() || newPassword.isEmpty()) {
-                        Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();
-                    } else {
-                        try {
-                            passwordAdapter.add(shepardDB.createStoredPassword(newDomain, newUsername, Encryption.ECrypt(godKey, newPassword), newStrength));
-                        } catch (Exception e) {
-                            Toast.makeText(context, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    if(newStrength!=0){
+
+                        if (domainText.getText().toString().isEmpty() || usernameText.getText().toString().isEmpty()) {
+                            Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();
+                        }else{
+                            try {
+                                passwordAdapter.add(shepardDB.createStoredPassword(newDomain, newUsername, Encryption.ECrypt(godKey, newPassword), newStrength));
+                            }catch (Exception e) {
+                                Toast.makeText(context, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                            alertDialog.dismiss();
                         }
-                        alertDialog.dismiss();
+                    }else{
+                        Toast.makeText(context, "Password has to be 6 characters or more", Toast.LENGTH_LONG).show();
                     }
                     passwordAdapter.notifyDataSetChanged();
                 }
@@ -323,13 +296,10 @@ public class Shepherd extends ListActivity {
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //do some checking here is password empty? is password too short?
-                            //calculate 'strength'
-                            //#Jose
                             String newDomain = domainText.getText().toString();
                             String newUsername = usernameText.getText().toString();
                             String newPassword = passwordText.getText().toString();
-                            int newStrength = 50; //make this be calculated based on password complexity
+                            int newStrength = 50;
 
                             if (newDomain.isEmpty() || newPassword.isEmpty()) {
                                 Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();

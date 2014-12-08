@@ -50,43 +50,19 @@ public class PasswordItem {
 
     //password strength checker
     public static int passwordStrengthMeter(String password) {
+        int passwordStrengthMeter = 0;
+        String STRONG_PASSWORD = "((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})";
+        String MODERATE_PASSWORD = "((?=.*[a-z]\\S.*)(?=.*[A-Z]\\S.*)(?=.*\\d\\S.+)([!@#$%&*()<>=+/?]*)).{10,15}";
+        String WEAK_PASSWORD ="(([a-zA-Z0-9-!@#$%&*()/?><]?).{6,8})";
 
-        //Pattern STRONG_PASSWORD = Pattern.compile("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%&*()<>=+/?]).{16,32})");
-        //Pattern MODERATE_PASSWORD = Pattern.compile("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.*[!@#$%&*()<>=+/?]).{10,15})");
-        //Pattern WEAK_PASSWORD = Pattern.compile("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()<>=+/?]).{6,9})");
-        //Matcher m = STRONG_PASSWORD.matcher(password);
-
-
-        int passwordStrengthMeter = 1;
-
-        //int numDigits = getNumberDigits(password);
-
-        if (password != null) {
-            if (password.length() > 5) {
-                //Strong password if it contains lower and upper cases, numbers, characters and is longer than 12
-                if (password.length() > 15) {
-                    passwordStrengthMeter=passwordStrengthMeter+10;
-                }
-                //if(password.length() > 9 && password.length() < 16 && password.contains("((?=.+\\d)(?=.+[a-z])(?=.+[A-Z])(?=.+[!@#$%^&*()_-=+/?]))") ){
-                  //  passwordStrengthMeter=passwordStrengthMeter+7;
-                //}
-                //if (password.length() > 11) {
-                    //passwordStrengthMeter=passwordStrengthMeter+2;// good pw length of 9
-                //}
-                //else if(password.length() > 5 && password.length() < 10){
-                  //  passwordStrengthMeter++;// minimal pw length of 6
-                //}
-                //if (password.contains("!")) {
-                  //  passwordStrengthMeter=passwordStrengthMeter+2;
-                //}
-                //if (numDigits > 0 && numDigits != password.length()) {
-                  //  passwordStrengthMeter=passwordStrengthMeter+2;
-                //}else{
-                  //  passwordStrengthMeter++;
-                //}
-               // return passwordStrengthMeter;
-            }
-            //return passwordStrengthMeter;
+        if (password.matches(WEAK_PASSWORD)) {
+            passwordStrengthMeter=10; //Strong password if it contains lower and upper cases, numbers, characters and is longer than 16
+        }else if (password.matches(MODERATE_PASSWORD)) {
+            passwordStrengthMeter = 70;//Moderate password if it contains lower and upper cases, numbers, characters and is longer than 9
+        }else if(password.matches(STRONG_PASSWORD)){
+            passwordStrengthMeter=100;
+        }else{
+            passwordStrengthMeter=0;
         }
         return passwordStrengthMeter;
     }
