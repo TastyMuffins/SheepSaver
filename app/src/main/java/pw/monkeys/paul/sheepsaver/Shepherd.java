@@ -299,7 +299,7 @@ public class Shepherd extends ListActivity {
                             String newDomain = domainText.getText().toString();
                             String newUsername = usernameText.getText().toString();
                             String newPassword = passwordText.getText().toString();
-                            int newStrength = 50;
+                            int newStrength = PasswordItem.passwordStrengthMeter(passwordText.getText().toString());
 
                             if (newDomain.isEmpty() || newPassword.isEmpty()) {
                                 Toast.makeText(context, "Domain or Password empty", Toast.LENGTH_LONG).show();
